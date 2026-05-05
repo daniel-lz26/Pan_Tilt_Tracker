@@ -1,10 +1,15 @@
 # src/main.py
 import cv2
 import time
-from detector import ObjectDetector
-from controller import PanTiltController
 
-SIMULATE_SERIAL = True  # Set False when Arduino is connected
+SIMULATE_SERIAL = True   # Set False when Arduino is connected
+USE_TFLITE = False        # Set True on Raspberry Pi
+
+if USE_TFLITE:
+    from detector_tflite import ObjectDetector
+else:
+    from detector import ObjectDetector
+from controller import PanTiltController
 
 def main():
     cap = cv2.VideoCapture(0)
@@ -17,9 +22,9 @@ def main():
     # Serial setup (skip in simulation)
     ser = None
     if not SIMULATE_SERIAL:
-        import serial
-        ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
-        time.sleep(2)
+        from serial_comm import SerialComm
+        ser = SerialComm()  # auto-detects port; pass port="COM4" to override
+        ser.connect()
 
     prev_time = time.time()
 
@@ -44,7 +49,7 @@ def main():
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 0), 1)
 
             if ser:
-                ser.write((command + "\n").encode())
+                ser.send(command)
             else:
                 print(f"[SIM] Sending: {command}")
 
@@ -64,6 +69,8 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
+    if ser:
+        ser.close()
 
 if __name__ == "__main__":
     main()
