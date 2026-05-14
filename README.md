@@ -227,22 +227,24 @@ pip install -r requirements.txt
 
 ### 2. Download the dataset (required for training + evaluation)
 1. Download from: https://www.kaggle.com/datasets/sshikamaru/drone-detection
-2. Extract and place at:
+2. Extract so the structure matches:
 ```
 dataset/
-├── images/
-│   ├── train/    <- training images (.jpg)
-│   └── val/      <- validation images (.jpg)
-└── labels/
-    ├── train/    <- YOLO .txt label files
-    └── val/
+├── data.yaml         <- already provided
+├── train/
+│   ├── images/       <- training images (.jpg)
+│   └── labels/       <- YOLO .txt label files
+├── valid/
+│   ├── images/
+│   └── labels/
+└── test/
+    ├── images/
+    └── labels/
 ```
-`dataset/data.yaml` is already provided.
 
 ### 3. Run the tracker (no Arduino needed)
 ```bash
-cd src
-python main.py
+python src/main.py
 # SIMULATE_SERIAL = True by default — no Arduino required
 # Press Q to quit
 ```
@@ -252,10 +254,6 @@ The tracker opens your webcam and runs YOLOv8n drone detection.
 ```bash
 python src/train.py
 # Trains for 50 epochs, outputs to runs/detect/drone_finetune/weights/best.pt
-```
-After training, edit `src/main.py` line 19 to use the fine-tuned model:
-```python
-detector = ObjectDetector(model_path="runs/detect/drone_finetune/weights/best.pt", target_class="drone")
 ```
 
 ### 5. Run evaluation and generate charts
@@ -271,10 +269,8 @@ python src/evaluate.py
 
 | Model | mAP50 | Precision | Recall | Latency (ms) | FPS |
 |---|---|---|---|---|---|
-| YOLOv8n (COCO baseline) | — | — | — | — | — |
-| YOLOv8n (Fine-tuned drone) | — | — | — | — | — |
-
-*Results to be filled after training completes.*
+| YOLOv8n (COCO baseline) | 0.0141 | 0.0274 | 0.0110 | 8.92 ms | 112.1 |
+| YOLOv8n (Fine-tuned drone) | 0.9668 | 0.9249 | 0.9504 | 8.55 ms | 116.9 |
 
 ---
 

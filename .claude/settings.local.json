@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\\\Users\\\\danie\\\\Desktop\\\\Coding\\\\Pan_Tilt_Tracker\" /b)"
+    ]
+  }
+}

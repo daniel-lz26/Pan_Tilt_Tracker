@@ -22,10 +22,10 @@ from ultralytics import YOLO
 
 
 DATA_YAML = "dataset/data.yaml"
-BASE_MODEL = "src/yolov8n.pt"
+BASE_MODEL = "yolov8n.pt"
 EPOCHS = 50
 IMG_SIZE = 640
-BATCH = 16
+BATCH = 32
 RUN_NAME = "drone_finetune"
 
 
@@ -36,10 +36,10 @@ def main():
         raise FileNotFoundError(f"data.yaml not found at {DATA_YAML}. "
                                 "Did you set up the dataset/ directory?")
 
-    train_imgs = Path("dataset/images/train")
+    train_imgs = Path("dataset/train/images")
     if not train_imgs.exists() or not any(train_imgs.iterdir()):
         raise FileNotFoundError(
-            "No training images found at dataset/images/train/. "
+            "No training images found at dataset/train/images/. "
             "Download the Kaggle drone dataset first."
         )
 
@@ -57,6 +57,7 @@ def main():
         project="runs/detect",
         exist_ok=True,
         verbose=True,
+        workers=4,
     )
 
     best_weights = Path(f"runs/detect/{RUN_NAME}/weights/best.pt")

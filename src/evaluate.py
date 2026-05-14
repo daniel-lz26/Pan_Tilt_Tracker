@@ -22,7 +22,7 @@ from ultralytics import YOLO
 
 
 DATA_YAML = "dataset/data.yaml"
-BASELINE_MODEL = "src/yolov8n.pt"
+BASELINE_MODEL = "yolov8n.pt"
 FINETUNED_MODEL = "runs/detect/drone_finetune/weights/best.pt"
 RESULTS_DIR = Path("results")
 LATENCY_WARMUP = 10

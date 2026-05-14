@@ -218,3 +218,10 @@ dataset/train/
 dataset/valid/
 dataset/test/
 runs/
+
+# Track fine-tuned weights for submission
+!runs/
+!runs/detect/
+!runs/detect/drone_finetune/
+!runs/detect/drone_finetune/weights/
+!runs/detect/drone_finetune/weights/best.pt
