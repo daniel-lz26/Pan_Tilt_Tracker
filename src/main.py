@@ -16,7 +16,8 @@ def main():
     frame_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-    detector = ObjectDetector(target_class="person")
+    # Use fine-tuned drone model after training: model_path="runs/detect/drone_finetune/weights/best.pt"
+    detector = ObjectDetector(model_path="src/yolov8n.pt", target_class="Drone")
     controller = PanTiltController(frame_w, frame_h, threshold=40)
 
     # Serial setup (skip in simulation)

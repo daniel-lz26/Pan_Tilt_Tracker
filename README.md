@@ -210,18 +210,79 @@ It should not be framed as a simple object detection demo
 
 ## Current Status
 
-* Hardware has not yet arrived
-* Preparing software and architecture in advance
-* Building detection and decision logic on laptop first
+* CV pipeline complete and tested on laptop (Phase 1 done)
+* Fine-tuning YOLOv8n on custom drone dataset (Phase 3 ML experiment)
+* Hardware actuation is a stretch goal — not required for CPSC 483 submission
+
+---
+
+## Setup & Running (Grader Instructions)
+
+### 1. Install dependencies
+```bash
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### 2. Download the dataset (required for training + evaluation)
+1. Download from: https://www.kaggle.com/datasets/sshikamaru/drone-detection
+2. Extract and place at:
+```
+dataset/
+├── images/
+│   ├── train/    <- training images (.jpg)
+│   └── val/      <- validation images (.jpg)
+└── labels/
+    ├── train/    <- YOLO .txt label files
+    └── val/
+```
+`dataset/data.yaml` is already provided.
+
+### 3. Run the tracker (no Arduino needed)
+```bash
+cd src
+python main.py
+# SIMULATE_SERIAL = True by default — no Arduino required
+# Press Q to quit
+```
+The tracker opens your webcam and runs YOLOv8n drone detection.
+
+### 4. Fine-tune the model (requires dataset)
+```bash
+python src/train.py
+# Trains for 50 epochs, outputs to runs/detect/drone_finetune/weights/best.pt
+```
+After training, edit `src/main.py` line 19 to use the fine-tuned model:
+```python
+detector = ObjectDetector(model_path="runs/detect/drone_finetune/weights/best.pt", target_class="drone")
+```
+
+### 5. Run evaluation and generate charts
+```bash
+python src/evaluate.py
+# Requires: dataset/ and runs/detect/drone_finetune/weights/best.pt
+# Outputs: results/results_table.csv, results/metrics_comparison.png, results/latency_comparison.png
+```
+
+---
+
+## ML Experiment Results
+
+| Model | mAP50 | Precision | Recall | Latency (ms) | FPS |
+|---|---|---|---|---|---|
+| YOLOv8n (COCO baseline) | — | — | — | — | — |
+| YOLOv8n (Fine-tuned drone) | — | — | — | — | — |
+
+*Results to be filled after training completes.*
 
 ---
 
 ## Next Areas of Focus
 
-* Implementing detection and decision logic cleanly
-* Structuring the codebase properly
-* Transitioning from laptop to Raspberry Pi
-* Arduino communication and servo control
-* Adding smoothing or PID control
+* Complete ML experiment (train + evaluate)
+* Write final report (academic poster format)
+* Record 5-minute presentation video
+* Hardware actuation (stretch goal)
 
 ---
