@@ -1,239 +1,72 @@
-# Pan_Tilt_Tracker
-I love working with PCBs and AI so I wanted to combine them into a single project. With an arduino, Pi, and Servos  I will make a pan tilt tracker that will follow objects. Once completed, I also want to implement a drone tracking model.
+# Pan-Tilt Tracker — Edge AI Aerial Object Detection
 
-# Project Context: Edge AI Pan-Tilt Tracking System
+A real-time object detection and tracking system that fine-tunes YOLOv8n on a custom drone dataset (Drones, Airplanes, Helicopters) and compares it against the COCO baseline model. Built for CPSC 483.
 
-## Overview
-
-I am building a real-time embedded AI system that performs object detection and physically tracks a moving target using a camera mounted on a pan-tilt mechanism. The system integrates machine learning, embedded systems, and hardware control.
-
-This project is intended for:
-
-* Machine Learning coursework
-* Resume building for software engineering, embedded systems, and defense internships
+The system uses a webcam, runs inference locally, and outputs directional servo commands (pan/tilt). No Arduino hardware is required to run the ML experiment — serial communication is simulated by default.
 
 ---
 
-## Core Objective
+## Required Libraries
 
-Develop a system that:
+```
+ultralytics
+opencv-python
+numpy
+pyserial
+matplotlib
+```
 
-1. Captures video input using a Raspberry Pi camera
-2. Runs real-time object detection (YOLO or TensorFlow Lite)
-3. Determines object position relative to the frame
-4. Sends control signals to an Arduino
-5. Adjusts servo motors (pan and tilt) to track the object
-6. Optionally uses an ultrasonic sensor for distance awareness
-
----
-
-## System Architecture
-
-Camera → Raspberry Pi (ML and logic) → Serial Communication → Arduino → Servos (Pan-Tilt)
-
-Additional sensor:
-Ultrasonic → Arduino → influences movement decisions
+All exact pinned versions are listed in `requirements.txt`.
 
 ---
 
-## Hardware Components
+## Installation
 
-### Currently Owned:
+**Step 1 — Create a virtual environment**
 
-* Raspberry Pi 4
-* Arduino R4 WiFi
-
-### Ordered or Planned:
-
-* Raspberry Pi Camera Module (preferably Camera Module 3)
-* 2 SG90 (180°) servos
-* Breadboard and jumper wires
-* LEDs and resistors
-* Ultrasonic sensor (HC-SR04)
-* 3D printed pan-tilt mount
-
----
-
-## Hardware Decisions Made
-
-* Avoid using a prebuilt drone as the core system, only as a possible extension
-* Avoid using the Lorex camera system due to security risks and limited flexibility
-* Use a Raspberry Pi camera for full control and better integration
-* Use SG90 180° servos instead of 90° alternatives
-
----
-
-## Software Stack
-
-### Development (Laptop First)
-
-* Python
-* OpenCV
-* YOLO (Ultralytics)
-* NumPy
-* PySerial
-
-### Deployment (Raspberry Pi)
-
-* TensorFlow Lite or lightweight YOLO
-* Optimized inference for edge device constraints
-
----
-
-## System Flow
-
-1. Capture frame
-2. Run object detection
-3. Extract bounding box
-4. Compute object center
-5. Compare with frame center
-6. Generate directional command (LEFT, RIGHT, UP, DOWN)
-7. Send command via serial to Arduino
-8. Arduino adjusts servo angles
-
----
-
-## Control Logic (Planned)
-
-* Threshold-based tracking (initial implementation)
-* Add smoothing to reduce jitter
-* Potential upgrade to PID control for improved stability
-
----
-
-## Performance Metrics (Required)
-
-* Frames per second (FPS)
-* Inference latency
-* CPU usage (optional)
-
----
-
-## Key Features for Resume
-
-* Real-time object tracking
-* Embedded system communication (Raspberry Pi to Arduino)
-* Closed-loop control system
-* Hardware and software integration
-* Performance optimization under constraints
-
----
-
-## Machine Learning Component
-
-* Use a pretrained model initially (YOLOv8n or MobileNet)
-* Possible extensions:
-
-  * Train on a custom dataset
-  * Compare multiple models
-  * Analyze accuracy versus speed tradeoffs
-
----
-
-## Mechanical Component (3D Printing)
-
-* Pan-tilt mount for two servos
-* Camera holder
-* Optional base for Arduino and breadboard
-
----
-
-## Constraints and Rules
-
-* Do not build a detection-only system
-* Must include:
-
-  * decision logic
-  * servo actuation
-  * real-time behavior
-* Avoid unnecessary complexity in early stages
-
----
-
-## Development Plan
-
-### Phase 1 (Pre-Hardware)
-
-* Set up object detection on laptop
-* Implement decision logic
-* Simulate command outputs
-
-### Phase 2 (Initial Integration)
-
-* Set up Raspberry Pi camera
-* Run detection on Raspberry Pi
-* Establish serial communication
-
-### Phase 3 (Actuation)
-
-* Control one servo
-* Expand to pan-tilt with two servos
-
-### Phase 4 (Enhancement)
-
-* Add ultrasonic sensor
-* Implement smoothing or PID control
-* Optimize performance
-
----
-
-## End Goal
-
-A fully functional real-time embedded AI tracking system with physical actuation that demonstrates:
-
-* embedded systems knowledge
-* machine learning application
-* control systems understanding
-
----
-
-## Resume Positioning
-
-This project should be framed as:
-
-* an embedded AI system
-* a real-time control system
-* a hardware-software integration project
-
-It should not be framed as a simple object detection demo
-
----
-
-## Stretch Goals (Optional)
-
-* Multi-object tracking
-* Distance-aware tracking using ultrasonic sensor
-* Object following behavior
-* Drone integration as a later stage
-
----
-
-## Current Status
-
-* CV pipeline complete and tested on laptop (Phase 1 done)
-* Fine-tuning YOLOv8n on custom drone dataset (Phase 3 ML experiment)
-* Hardware actuation is a stretch goal — not required for CPSC 483 submission
-
----
-
-## Setup & Running (Grader Instructions)
-
-### 1. Install dependencies
 ```bash
 python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+```
+
+**Step 2 — Activate the virtual environment**
+
+Windows:
+```bash
+venv\Scripts\activate
+```
+
+Mac / Linux:
+```bash
+source venv/bin/activate
+```
+
+**Step 3 — Install all dependencies**
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Download the dataset (required for training + evaluation)
-1. Download from: https://www.kaggle.com/datasets/sshikamaru/drone-detection
-2. Extract so the structure matches:
+---
+
+## Dataset Setup
+
+The dataset is too large to include in the repository and must be downloaded manually.
+
+**Source:** https://www.kaggle.com/datasets/sshikamaru/drone-detection
+
+**Download steps:**
+1. Create a free Kaggle account if you do not have one
+2. Go to the URL above and click **Download**
+3. Extract the zip file
+
+**Required folder structure** (place files inside the existing `dataset/` folder):
+
 ```
 dataset/
-├── data.yaml         <- already provided
+├── data.yaml              ← already provided in the repo, do not replace
 ├── train/
-│   ├── images/       <- training images (.jpg)
-│   └── labels/       <- YOLO .txt label files
+│   ├── images/            ← place training .jpg images here
+│   └── labels/            ← place training .txt label files here
 ├── valid/
 │   ├── images/
 │   └── labels/
@@ -242,26 +75,107 @@ dataset/
     └── labels/
 ```
 
-### 3. Run the tracker (no Arduino needed)
-```bash
-python src/main.py
-# SIMULATE_SERIAL = True by default — no Arduino required
-# Press Q to quit
-```
-The tracker opens your webcam and runs YOLOv8n drone detection.
+**Contents of `dataset/data.yaml`** (already included — shown here for reference):
 
-### 4. Fine-tune the model (requires dataset)
+```yaml
+train: ../dataset/train/images
+val:   ../dataset/valid/images
+test:  ../dataset/test/images
+
+nc: 3
+names: ['AirPlane', 'Drone', 'Helicopter']
+```
+
+> The dataset is only required to run `train.py` or `evaluate.py`. The live demo (`main.py`) works without it because the trained weights are already included.
+
+---
+
+## How to Run
+
+All commands are run from the **project root directory** (the folder containing `src/`, `dataset/`, etc.).
+
+### 1. Fine-tune the model
+
 ```bash
 python src/train.py
-# Trains for 50 epochs, outputs to runs/detect/drone_finetune/weights/best.pt
 ```
 
-### 5. Run evaluation and generate charts
+- Fine-tunes YOLOv8n on the drone dataset for 50 epochs
+- Requires the dataset to be set up first (see Dataset Setup above)
+- Takes approximately 10–30 minutes depending on hardware
+- Saves weights to `runs/detect/drone_finetune/weights/best.pt`
+
+### 2. Evaluate and compare models
+
 ```bash
 python src/evaluate.py
-# Requires: dataset/ and runs/detect/drone_finetune/weights/best.pt
-# Outputs: results/results_table.csv, results/metrics_comparison.png, results/latency_comparison.png
 ```
+
+- Requires the dataset and `runs/detect/drone_finetune/weights/best.pt`
+- Compares the COCO baseline model vs the fine-tuned drone model
+- Saves results to the `results/` folder:
+  - `results/results_table.csv` — all metrics
+  - `results/metrics_comparison.png` — mAP50, Precision, Recall bar chart
+  - `results/latency_comparison.png` — inference speed bar chart
+
+### 3. Run the live detection demo
+
+```bash
+python src/main.py
+```
+
+- Opens your webcam and runs the fine-tuned drone detector in real time
+- Draws bounding boxes around detected objects
+- Prints simulated servo commands to the terminal
+- Shows live FPS in the video window
+- Press **Q** to quit
+
+> The pre-trained weights (`runs/detect/drone_finetune/weights/best.pt`) are included in the repository. You do not need to run `train.py` before running the demo.
+
+---
+
+## Project Structure
+
+```
+Pan_Tilt_Tracker/
+├── src/
+│   ├── main.py            # Live tracker — webcam + detection + servo commands
+│   ├── train.py           # Fine-tunes YOLOv8n on the drone dataset
+│   ├── evaluate.py        # Model comparison — outputs metrics and charts
+│   ├── detector.py        # YOLOv8 inference wrapper
+│   ├── controller.py      # Pan-tilt deadzone and angle logic
+│   └── serial_comm.py     # Arduino serial communication (unused in sim mode)
+├── arduino/
+│   ├── tracker.ino        # Arduino firmware for servo control
+│   └── test.ino           # Servo test sketch
+├── dataset/
+│   ├── data.yaml          # Dataset config (included)
+│   ├── train/             # Training split (download separately)
+│   ├── valid/             # Validation split (download separately)
+│   └── test/              # Test split (download separately)
+├── runs/
+│   └── detect/drone_finetune/weights/
+│       └── best.pt        # Trained model weights (included)
+├── results/
+│   ├── results_table.csv
+│   ├── metrics_comparison.png
+│   └── latency_comparison.png
+└── requirements.txt
+```
+
+---
+
+## Simulation Mode
+
+Serial communication is disabled by default so the code runs on any machine without an Arduino.
+
+In `src/main.py`, line 5:
+
+```python
+SIMULATE_SERIAL = True   # Set to False only when Arduino is physically connected
+```
+
+When `True`, servo commands are printed to the terminal instead of sent over USB. The ML experiment (train + evaluate) is entirely unaffected by this flag.
 
 ---
 
@@ -270,15 +184,41 @@ python src/evaluate.py
 | Model | mAP50 | Precision | Recall | Latency (ms) | FPS |
 |---|---|---|---|---|---|
 | YOLOv8n (COCO baseline) | 0.0141 | 0.0274 | 0.0110 | 8.92 ms | 112.1 |
-| YOLOv8n (Fine-tuned drone) | 0.9668 | 0.9249 | 0.9504 | 8.55 ms | 116.9 |
+| YOLOv8n (Fine-tuned drone) | **0.9668** | **0.9249** | **0.9504** | 8.55 ms | 116.9 |
+
+Fine-tuning on the drone-specific dataset improved mAP50 by **68.5×** with no increase in inference latency.
 
 ---
 
-## Next Areas of Focus
+## Troubleshooting
 
-* Complete ML experiment (train + evaluate)
-* Write final report (academic poster format)
-* Record 5-minute presentation video
-* Hardware actuation (stretch goal)
+**Webcam not found / black screen:**
+- Make sure a webcam is connected and not open in another application
+- If the default camera index does not work, change `cv2.VideoCapture(0)` to `cv2.VideoCapture(1)` in `src/main.py` line 16
+
+**`ModuleNotFoundError` on any import:**
+- Confirm the virtual environment is activated (you should see `(venv)` in your prompt)
+- Re-run `pip install -r requirements.txt`
+
+**`FileNotFoundError: best.pt not found`:**
+- The weights file should be at `runs/detect/drone_finetune/weights/best.pt`
+- If it is missing, run `python src/train.py` (dataset required)
+
+**`FileNotFoundError: data.yaml not found` or no training images:**
+- Complete the Dataset Setup section above before running `train.py` or `evaluate.py`
+
+**PyTorch fails to install:**
+- Use Python 3.10 or 3.11 — PyTorch may not support Python 3.12+ on all platforms
+
+**`UserWarning: CUDA not available` — inference is slow:**
+- This is normal on a machine without a GPU
+- CPU inference still runs at ~9 ms per frame (≈112 FPS) on the test results
 
 ---
+
+## References
+
+1. Jocher, G., et al. (2023). *Ultralytics YOLOv8*. https://github.com/ultralytics/ultralytics
+2. Redmon, J., & Farhadi, A. (2018). *YOLOv3: An Incremental Improvement*. arXiv:1804.02767.
+3. Kaggle Dataset: *Drone Detection* by sshikamaru. https://www.kaggle.com/datasets/sshikamaru/drone-detection
+4. Bradski, G. (2000). *The OpenCV Library*. Dr. Dobb's Journal of Software Tools.
